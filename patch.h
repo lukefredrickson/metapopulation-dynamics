@@ -8,35 +8,46 @@
 
 #include "variable_fill_circle.h"
 #include "species.h"
+#include "util.h"
 
 class Patch : public Variable_Fill_Circle {
 private:
     Species species;
-    int population;
-    int max_population;
-    double pop_percent_increment;
+    double population;
+    double max_population;
+
+
+    void set_pop_from_fill_percent();
+    void set_fill_percent_from_pop();
+    double extinction_probability();
+    bool decide_extinction();
+
+
 public:
     Patch();
     Patch(Variable_Fill_Circle circle, Species species);
-    Patch(Species species, color fill, point2D center, double radius, color background_fill, double fill_percent);
+    Patch(Species species, point2D center, double radius,  double fill_percent, color fill, color background_fill,
+            color border_fill, color overflow_fill);
 
     virtual ~Patch();
 
     const Species &get_species() const;
 
-    int get_population() const;
+    double get_population() const;
 
-    int get_max_population() const;
+    void update_population(double pop);
 
-    double get_population_percent() const;
+    double get_max_population() const;
 
-    void set_population_percent(double pop_percent);
+    void increment_fill_percent();
 
-    void increment_pop_percent();
+    void decrement_fill_percent();
 
-    void decrement_pop_percent();
+    void update_carrying_capacity(double radius);
 
-    void update_radius(double radius);
+    double simulate_population_growth();
+
+    void go_extinct();
 };
 
 

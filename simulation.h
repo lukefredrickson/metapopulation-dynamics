@@ -8,6 +8,12 @@
 #include "patch.h"
 #include <vector>
 #include <memory>
+#include "Eigen/Dense"
+#include <iostream>
+#include <utility>
+#include "main.h"
+
+enum season{SUMMER, FALL, WINTER, SPRING};
 
 using namespace std;
 class Simulation {
@@ -16,10 +22,38 @@ private:
     vector<unique_ptr<Patch>> ecosystem;
     int generations_to_run;
     int current_generation;
+    double winter_harshness;
     bool running;
+    season current_season;
+    Eigen::MatrixXd distances;
+    Eigen::VectorXd populations;
+    Eigen::MatrixXd migration_markov;
+
+    void fill_populations();
+
+    void fill_distances();
+
+    void fill_migration_markov();
+
+    void update_populations_vector_from_patches();
+
+    void update_patch_populations_from_vector();
+
+    void summer();
+    void fall();
+    void winter();
+    void spring();
+    void increment_current_generation();
+
+    void simulate_population_change();
+
+    void simulate_migration();
+
+    void adjust_carrying_capacity(double multiplier);
+
 public:
     Simulation();
-    Simulation(int generations_to_run, Species species);
+    Simulation(int generations_to_run, Species species, double winter_harshness);
 
     const Species &get_species() const;
 
@@ -49,7 +83,14 @@ public:
 
     bool run();
 
+    bool stop();
+
     void draw() const;
+
+    void set_patch_colors(color color);
+
+    void simulate_season();
+    void increment_season();
 };
 
 

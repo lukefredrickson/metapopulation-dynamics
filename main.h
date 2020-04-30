@@ -12,6 +12,8 @@
 #include <GLUT/glut.h>
 #else
 #include <GL/glut.h>
+#include <string>
+
 #endif
 
 // Program initialization NOT OpenGL/GLUT dependent,
@@ -36,7 +38,7 @@ void kbdS(int key, int x, int y);
 void drag(int x, int y);
 
 // Calls itself after a specified time
-void timer(int dummy);
+void sim_timer(int switcher);
 
 // Handle mouse button pressed and released events
 void mouse(int button, int state, int x, int y);

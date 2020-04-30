@@ -6,20 +6,20 @@
 #include <iostream>
 #include <memory>
 #include <vector>
+#include "Eigen/Dense"
 using namespace std;
 
 GLdouble width, height;
 int wd;
 bool left_mouse_pressed = false;
-bool layout_locked = false;
 Simulation sim;
-const Species SPECIES = Species();
+const Species SPECIES = Species(0.1, 0.1, 1.5, 0.25, 0.5, 20);
 
 void init() {
     width = 1000;
-    height = 500;
+    height = 1000;
     int gens =  100;
-    sim = Simulation(gens, SPECIES);
+    sim = Simulation(gens, SPECIES, 0.6);
 }
 
 /* Initialize OpenGL Graphics */
@@ -58,8 +58,12 @@ void kbd(unsigned char key, int x, int y)
     switch(key) {
         // enter: lock layout
         case 13: {
-            sim.run();
-            // run simulation
+            if(!sim.is_running()) {
+                // run simulation
+                sim.run();
+                // handles timer
+                glutTimerFunc(0, sim_timer, 0);
+            }
             break;
         }
         // esc: destroy window
@@ -124,8 +128,9 @@ void mouse(int button, int state, int x, int y) {
         left_mouse_pressed = true;
         // if the layout hasn't been locked in already, user is free to make new habitats.
         if (!sim.is_running()) {
-            Variable_Fill_Circle c = Variable_Fill_Circle(color(1,1,1,1),
-                    point2D(x,y), 0, color(0,0,0,1), 0);
+            Variable_Fill_Circle c = Variable_Fill_Circle(point2D(static_cast<double>(x), static_cast<double>(y)), 0,
+                    0, color(1,1,1,1),color(0,0,0,1),
+                    color(1,1,1,1), color(1,0,0,1));
             sim.add_patch(c);
         }
 
@@ -137,17 +142,38 @@ void mouse(int button, int state, int x, int y) {
     glutPostRedisplay();
 }
 
-void timer(int dummy) {
-    
-//    glutPostRedisplay();
-//    glutTimerFunc(30, timer, dummy);
+void sim_timer(int switcher) {
+    if (sim.is_running()) {
+        switch(switcher) {
+            case 0 : {
+                sim.simulate_season();
+                switcher = 1;
+                break;
+            }
+            case 1 : {
+                sim.increment_season();
+                switcher = 0;
+                break;
+            }
+            default : {
+                switcher = 0;
+            }
+        }
+        glutPostRedisplay();
+    }
+    if (sim.get_current_generation() < sim.get_generations_to_run()) {
+        glutTimerFunc(500, sim_timer, switcher);
+    } else {
+        sim.stop();
+    }
 }
-
 
 void resize(int w, int h) {
     // ignore params, snap window back to previous size
     glutReshapeWindow( width, height);
 }
+
+
 
 /* Main function: GLUT runs as a console application starting at main()  */
 int main(int argc, char** argv) {
@@ -184,9 +210,6 @@ int main(int argc, char** argv) {
 
     // handles window resizing
     glutReshapeFunc(resize);
-    
-    // handles timer
-    glutTimerFunc(0, timer, 0);
     
     // Enter the event-processing loop
     glutMainLoop();

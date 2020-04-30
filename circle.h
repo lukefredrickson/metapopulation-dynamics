@@ -38,7 +38,7 @@ public:
     void changeRadius(double delta);
 
     /* area */
-    double getArea();
+    double getArea() const;
 
     /* Draw */
     void draw() const override;

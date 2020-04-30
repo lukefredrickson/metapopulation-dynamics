@@ -95,6 +95,6 @@ void Circle::draw() const {
     glEnd();
 }
 
-double Circle::getArea() {
-    return pow(PI*radius, 2);
+double Circle::getArea() const {
+    return PI*pow(radius, 2);
 }

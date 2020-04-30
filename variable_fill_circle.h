@@ -8,12 +8,31 @@
 #include "circle.h"
 
 class Variable_Fill_Circle : public Circle {
-private:
+protected:
     double fill_percent;
     color background_fill;
+    color border_fill;
+    color overflow_fill;
+public:
+    const color &get_overflow_fill() const;
+
+    void set_overflow_fill(const color &overflow_fill);
+
+public:
+    const color &get_border_fill() const;
+
+public:
+    void set_border_fill(const color &border_fill);
+
+private:
+    void draw_inner() const;
+    void draw_background() const;
+    void draw_outer() const;
+    void draw_border() const;
 public:
     Variable_Fill_Circle();
-    Variable_Fill_Circle(color fill, point2D center, double radius, color background_fill, double fill_percent);
+    Variable_Fill_Circle(point2D center, double radius,  double fill_percent, color fill, color border_fill,
+            color background_fill, color overflow_fill);
 
     double get_fill_percent() const;
 

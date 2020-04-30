@@ -3,22 +3,22 @@
 //
 
 #include "patch.h"
-#include <utility>
 
+const double FILL_PERCENT_INCREMENT = 0.01;
 
 Patch::Patch() : Variable_Fill_Circle() {
-    this -> pop_percent_increment = 0.05;
 }
 
-Patch::Patch(Variable_Fill_Circle circle, Species species) : Patch(species, circle.getColor(), circle.getCenter(), circle.getRadius(),
-        circle.get_background_fill(), circle.get_fill_percent()) {}
+Patch::Patch(Variable_Fill_Circle circle, Species species) : Patch(species, circle.getCenter(), circle.getRadius(),
+        circle.get_fill_percent(), circle.getColor(), circle.get_background_fill(), circle.get_border_fill(),
+        circle.get_overflow_fill()) {}
 
-Patch::Patch(Species species, color fill, point2D center, double radius, color background_fill, double fill_percent) :
-        Variable_Fill_Circle(fill, center, radius, background_fill, fill_percent)  {
-    this -> pop_percent_increment = 0.05;
+Patch::Patch(Species species, point2D center, double radius,  double fill_percent, color fill, color background_fill,
+        color border_fill, color overflow_fill) :
+        Variable_Fill_Circle(center, radius,  fill_percent, fill,background_fill, border_fill, overflow_fill)  {
     this -> species = species;
     this -> max_population = this->getArea();
-    this -> population = max_population*this->get_fill_percent();
+    set_pop_from_fill_percent();
 }
 
 Patch::~Patch() {
@@ -29,33 +29,73 @@ const Species &Patch::get_species() const {
     return species;
 }
 
-int Patch::get_population() const {
+double Patch::get_population() const {
     return population;
 }
 
-int Patch::get_max_population() const {
+void Patch::update_population(double pop) {
+    // make sure population is >0
+    pop = pop < 0 ? 0 : pop;
+    this -> population = pop;
+    // update fill percent
+    set_fill_percent_from_pop();
+}
+
+double Patch::get_max_population() const {
     return max_population;
 }
 
-double Patch::get_population_percent() const {
-    return static_cast<double>(population) / max_population;
+void Patch::increment_fill_percent() {
+    set_fill_percent(this->fill_percent + FILL_PERCENT_INCREMENT);
+    set_pop_from_fill_percent();
 }
 
-void Patch::set_population_percent(double pop_percent) {
-    pop_percent = pop_percent > 1 ? 1 : (pop_percent < 0 ? 0 : pop_percent);
-    population = max_population * pop_percent;
-    set_fill_percent(pop_percent);
+void Patch::decrement_fill_percent() {
+    set_fill_percent(this->fill_percent - FILL_PERCENT_INCREMENT);
+    set_pop_from_fill_percent();
 }
 
-void Patch::increment_pop_percent() {
-    set_population_percent(get_population_percent()+pop_percent_increment);
-}
-
-void Patch::decrement_pop_percent() {
-    set_population_percent(get_population_percent()-pop_percent_increment);
-}
-
-void Patch::update_radius(double radius) {
+void Patch::update_carrying_capacity(double radius) {
     setRadius(radius);
+    set_fill_percent_from_pop();
     max_population = getArea();
+}
+
+double Patch::simulate_population_growth() {
+    if (decide_extinction()) {
+        double pop_before_extinction = population;
+        go_extinct();
+        return -pop_before_extinction;
+    } else {
+        double r = species.get_population_increase_rate();
+        double population_increase = r*population*(1-(population/max_population));
+        update_population(population + population_increase);
+        return population_increase;
+    }
+}
+
+void Patch::go_extinct() {
+    update_population(0);
+}
+
+/**************** PRIVATE METHODS ****************/
+
+void Patch::set_pop_from_fill_percent() {
+    population = PI*pow((this->radius*this->fill_percent), 2);
+}
+
+void Patch::set_fill_percent_from_pop() {
+    if (population == 0) {
+        set_fill_percent(0);
+    } else {
+        set_fill_percent(pow((population/PI), 0.5) / this->radius);
+    }
+}
+
+double Patch::extinction_probability() {
+    return 1 - (pow(population,2) / (pow(species.get_probable_extinction_population(),2) + pow(population,2)));
+}
+
+bool Patch::decide_extinction() {
+    return (Util::random_unit_interval() < extinction_probability());
 }
