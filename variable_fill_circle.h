@@ -13,17 +13,6 @@ protected:
     color background_fill;
     color border_fill;
     color overflow_fill;
-public:
-    const color &get_overflow_fill() const;
-
-    void set_overflow_fill(const color &overflow_fill);
-
-public:
-    const color &get_border_fill() const;
-
-public:
-    void set_border_fill(const color &border_fill);
-
 private:
     void draw_inner() const;
     void draw_background() const;
@@ -31,6 +20,7 @@ private:
     void draw_border() const;
 public:
     Variable_Fill_Circle();
+
     Variable_Fill_Circle(point2D center, double radius,  double fill_percent, color fill, color border_fill,
             color background_fill, color overflow_fill);
 
@@ -41,6 +31,14 @@ public:
     const color &get_background_fill() const;
 
     void set_background_fill(const color &background_fill);
+
+    const color &get_overflow_fill() const;
+
+    void set_overflow_fill(const color &overflow_fill);
+
+    const color &get_border_fill() const;
+
+    void set_border_fill(const color &border_fill);
 
     void draw() const override;
 };

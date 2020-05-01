@@ -3,15 +3,18 @@
 //
 
 #include "stochastic_event.h"
+#include "simulation.h"
 
-stochastic_event::stochastic_event() {
+Stochastic_Event::Stochastic_Event() {
     this->probability = 0;
 }
 
-stochastic_event::stochastic_event(double probability) {
+Stochastic_Event::~Stochastic_Event()= default;
+
+Stochastic_Event::Stochastic_Event(double probability) {
     this->probability = probability;
 }
 
-double stochastic_event::get_probability() const {
+double Stochastic_Event::get_probability() const {
     return probability;
 }

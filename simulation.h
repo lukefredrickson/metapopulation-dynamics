@@ -5,6 +5,7 @@
 #ifndef SIMULATION_H
 #define SIMULATION_H
 
+#include <algorithm>
 #include "patch.h"
 #include <vector>
 #include <memory>
@@ -12,6 +13,8 @@
 #include <iostream>
 #include <utility>
 #include "main.h"
+
+class Stochastic_Event;
 
 enum season{SUMMER, FALL, WINTER, SPRING};
 
@@ -28,6 +31,7 @@ private:
     Eigen::MatrixXd distances;
     Eigen::VectorXd populations;
     Eigen::MatrixXd migration_markov;
+    vector<unique_ptr<Stochastic_Event>> stochastic_events;
 
     void fill_populations();
 
@@ -50,6 +54,10 @@ private:
     void simulate_migration();
 
     void adjust_carrying_capacity(double multiplier);
+
+    void initialize_matrices();
+
+    void simulate_stochastic_events();
 
 public:
     Simulation();
@@ -86,6 +94,8 @@ public:
     bool stop();
 
     void draw() const;
+
+    void destroy_patch(int i);
 
     void set_patch_colors(color color);
 

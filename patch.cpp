@@ -62,16 +62,14 @@ void Patch::update_carrying_capacity(double radius) {
 }
 
 double Patch::simulate_population_growth() {
-    if (decide_extinction()) {
-        double pop_before_extinction = population;
-        go_extinct();
-        return -pop_before_extinction;
-    } else {
-        double r = species.get_population_increase_rate();
-        double population_increase = r*population*(1-(population/max_population));
-        update_population(population + population_increase);
-        return population_increase;
-    }
+    double r = species.get_population_increase_rate();
+    double population_increase = r*population*(1-(population/max_population));
+    update_population(population + population_increase);
+    return population_increase;
+}
+
+bool Patch::decide_extinction() {
+    return (utilities::random_unit_interval() < extinction_probability());
 }
 
 void Patch::go_extinct() {
@@ -94,8 +92,4 @@ void Patch::set_fill_percent_from_pop() {
 
 double Patch::extinction_probability() {
     return 1 - (pow(population,2) / (pow(species.get_probable_extinction_population(),2) + pow(population,2)));
-}
-
-bool Patch::decide_extinction() {
-    return (Util::random_unit_interval() < extinction_probability());
 }

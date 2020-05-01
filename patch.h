@@ -8,8 +8,10 @@
 
 #include "variable_fill_circle.h"
 #include "species.h"
-#include "util.h"
+#include "utilities.h"
+#include <iostream>
 
+using namespace std;
 class Patch : public Variable_Fill_Circle {
 private:
     Species species;
@@ -20,7 +22,6 @@ private:
     void set_pop_from_fill_percent();
     void set_fill_percent_from_pop();
     double extinction_probability();
-    bool decide_extinction();
 
 
 public:
@@ -46,6 +47,8 @@ public:
     void update_carrying_capacity(double radius);
 
     double simulate_population_growth();
+
+    bool decide_extinction();
 
     void go_extinct();
 };

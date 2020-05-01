@@ -28,7 +28,8 @@ file(GLOB SOURCE_FILES
         *.h
         )
 
-add_executable(graphics ${SOURCE_FILES} simulation.h species.h patch.h variable_fill_circle.h util.cpp stochastic_event.cpp)
+add_executable(graphics ${SOURCE_FILES} simulation.h species.h patch.h variable_fill_circle.h
+        stochastic_event.h disease.h patch_destruction.h utilities.cpp)
 
 if (WIN32)
     target_link_libraries (graphics ${OPENGL_LIBRARIES} freeglut)

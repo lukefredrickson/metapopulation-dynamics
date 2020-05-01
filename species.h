@@ -14,7 +14,6 @@ private:
     double emigration_proportion;
     double migration_distance_weight;
     double migrant_mortality_rate;
-    double colonization_probability;
     // extinction
     double probable_extinction_population;
 public:
@@ -22,7 +21,7 @@ public:
 
     Species(double intrinsic_rate_of_increase,
             double emigration_proportion, double migration_distance, double migrant_mortality_rate,
-            double colonization_probability, double probable_extinction_population);
+            double probable_extinction_population);
 
     ~Species();
 

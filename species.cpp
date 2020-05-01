@@ -8,12 +8,11 @@ Species::Species() {}
 
 Species::Species(double intrinsic_rate_of_increase,
                  double emigration_proportion, double migration_distance, double migrant_mortality_rate,
-                 double colonization_probability, double probable_extinction_population)
+                 double probable_extinction_population)
                     : intrinsic_rate_of_increase(intrinsic_rate_of_increase),
                         emigration_proportion(emigration_proportion),
                         migration_distance_weight(migration_distance),
                         migrant_mortality_rate(migrant_mortality_rate),
-                        colonization_probability(colonization_probability),
                         probable_extinction_population(
                         probable_extinction_population) {}
 
@@ -49,14 +48,6 @@ double Species::get_migrant_mortality_rate() const {
 
 void Species::set_migrant_mortality_rate(double migrant_mortality_rate) {
     this -> migrant_mortality_rate = migrant_mortality_rate;
-}
-
-double Species::get_colonization_probability() const {
-    return colonization_probability;
-}
-
-void Species::set_colonization_probability(double colonization_probability) {
-    this -> colonization_probability = colonization_probability;
 }
 
 double Species::get_probable_extinction_population() const {

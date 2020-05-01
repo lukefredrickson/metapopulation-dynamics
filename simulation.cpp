@@ -3,16 +3,19 @@
 //
 
 #include "simulation.h"
-
+#include "disease.h"
+#include "patch_destruction.h"
 
 Simulation::Simulation() {
     species = Species();
     ecosystem = vector<unique_ptr<Patch>>();
     generations_to_run = 0;
     current_generation = 0;
+    winter_harshness = 1;
     running = false;
     current_season = SUMMER;
-
+    stochastic_events.push_back(make_unique<Disease>(Disease(0.05, 0.5)));
+    stochastic_events.push_back(make_unique<Patch_Destruction>(Patch_Destruction(0.01)));
 }
 
 Simulation::Simulation(int generations_to_run, Species species, double winter_harshness) : Simulation() {
@@ -94,10 +97,14 @@ bool Simulation::decrement_population_last_patch() {
 
 bool Simulation::run() {
     running = true;
+    initialize_matrices();
+    return running;
+}
+
+void Simulation::initialize_matrices() {
     fill_populations();
     fill_distances();
     fill_migration_markov();
-    return running;
 }
 
 bool Simulation::stop() {
@@ -154,7 +161,12 @@ void Simulation::update_patch_populations_from_vector() {
 }
 
 void Simulation::simulate_population_change() {
+    int nat_extinctions = 0;
     for (unique_ptr<Patch> &p : ecosystem) {
+        if (p -> get_population() > 0 && p -> decide_extinction()) {
+            ++nat_extinctions;
+            p -> go_extinct();
+        }
         double growth = p -> simulate_population_growth();
         if (growth > 0) {
             p -> setColor(color(0, 1, 0));
@@ -163,6 +175,9 @@ void Simulation::simulate_population_change() {
         } else {
             p -> setColor(color(1, 1, 1));
         }
+    }
+    if (nat_extinctions > 0) {
+        cout << "(natural extinctions: " << nat_extinctions << ")\t";
     }
     update_populations_vector_from_patches();
 }
@@ -220,26 +235,28 @@ void Simulation::spring() {
 }
 
 void Simulation::simulate_season() {
+    simulate_stochastic_events();
+    update_populations_vector_from_patches();
     switch(current_season) {
         case SUMMER: {
             summer();
-            cout << "Gen " << current_generation << endl;
-            cout << "SUMMER\t";
+            cout << "\n\nGeneration " << current_generation;
+            cout << "\nSUMMER\t";
             break;
         }
         case FALL: {
             fall();
-            cout << "FALL\t";
+            cout << "\nFALL\t";
             break;
         }
         case WINTER: {
             winter();
-            cout << "WINTER\t";
+            cout << "\nWINTER\t";
             break;
         }
         case SPRING: {
             spring();
-            cout << "SPRING\t" << endl;
+            cout << "\nSPRING\t";
             break;
         }
     }
@@ -266,6 +283,20 @@ void Simulation::increment_season() {
         case SPRING: {
             adjust_carrying_capacity(1/pow(winter_harshness, 0.5));
             current_season = SUMMER;
+            break;
+        }
+    }
+}
+
+void Simulation::destroy_patch(int i) {
+    ecosystem.erase(ecosystem.begin() + i);
+    initialize_matrices();
+}
+
+void Simulation::simulate_stochastic_events() {
+    for (unique_ptr<Stochastic_Event> &e : stochastic_events) {
+        if (utilities::random_unit_interval() < e->get_probability()) {
+            e->execute(this);
             break;
         }
     }

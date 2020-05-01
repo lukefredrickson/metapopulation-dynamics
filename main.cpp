@@ -7,13 +7,17 @@
 #include <memory>
 #include <vector>
 #include "Eigen/Dense"
+#include "stochastic_event.h"
+#include "disease.h"
+#include "patch_destruction.h"
 using namespace std;
 
 GLdouble width, height;
 int wd;
 bool left_mouse_pressed = false;
 Simulation sim;
-const Species SPECIES = Species(0.1, 0.1, 1.5, 0.25, 0.5, 20);
+const Species SPECIES = Species(0.2, 0.2, 1.5,
+        0.25, 30);
 
 void init() {
     width = 1000;
