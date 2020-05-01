@@ -18,6 +18,7 @@ double species_emigration_prop = 0.2;
 double species_migration_dist_modifier = 1.5;
 double species_migrant_mortality = 0.25;
 int species_probable_extinction_pop = 20;
+
 const Species SPECIES = Species(species_r, species_emigration_prop, species_migration_dist_modifier,
                                 species_migrant_mortality, species_probable_extinction_pop);
 
@@ -27,7 +28,7 @@ void init() {
     height = 1000;
     // CHANGE SIMULATION VALUES HERE
     timer_duration = 1000;
-    int generations_to_run =  100;
+    int generations_to_run =  50;
     double winter_harshness = 0.4; // proportion of summer carrying capacity each patch reduces to in winter
     sim = Simulation(generations_to_run, SPECIES, winter_harshness);
 }
@@ -170,10 +171,10 @@ void sim_timer(int switcher) {
         }
         glutPostRedisplay();
     }
-    if (sim.get_current_generation() < sim.get_generations_to_run()) {
-        glutTimerFunc(timer_duration/2, sim_timer, switcher);
-    } else {
+    if (sim.get_current_generation() > sim.get_generations_to_run()) {
         sim.stop();
+    } else if (sim.is_running()) {
+        glutTimerFunc(timer_duration/2, sim_timer, switcher);
     }
 }
 

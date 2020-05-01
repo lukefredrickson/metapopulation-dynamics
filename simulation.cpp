@@ -16,7 +16,7 @@ Simulation::Simulation() {
     current_season = SUMMER;
 
     // CHANGE STOCHASTIC EVENT PARAMS HERE
-    double disease_prob = 0.05;
+    double disease_prob = 0.025;
     double disease_extinction_prob = 0.5;
     double patch_destruction_prob = 0.01;
 
@@ -246,27 +246,33 @@ void Simulation::spring() {
 void Simulation::simulate_season() {
     simulate_stochastic_events();
     update_populations_vector_from_patches();
-    switch(current_season) {
-        case SUMMER: {
-            summer();
-            cout << "\n\nGeneration " << current_generation;
-            cout << "\nSUMMER\t";
-            break;
-        }
-        case FALL: {
-            fall();
-            cout << "\nFALL\t";
-            break;
-        }
-        case WINTER: {
-            winter();
-            cout << "\nWINTER\t";
-            break;
-        }
-        case SPRING: {
-            spring();
-            cout << "\nSPRING\t";
-            break;
+    int total_population = floor(count_population());
+    if (total_population == 0) {
+        cout << "\n\nFULL EXTINCTION, GEN " << current_generation << endl;
+        stop();
+    } else {
+        switch(current_season) {
+            case SUMMER: {
+                summer();
+                cout << "\n\nGeneration " << current_generation << "\t(Pop = " << total_population << ")";
+                cout << "\nSUMMER\t";
+                break;
+            }
+            case FALL: {
+                fall();
+                cout << "\nFALL\t";
+                break;
+            }
+            case WINTER: {
+                winter();
+                cout << "\nWINTER\t";
+                break;
+            }
+            case SPRING: {
+                spring();
+                cout << "\nSPRING\t";
+                break;
+            }
         }
     }
 }
@@ -309,4 +315,12 @@ void Simulation::simulate_stochastic_events() {
             e->execute(this);
         }
     }
+}
+
+double Simulation::count_population() {
+    double total_pop = 0;
+    for (unique_ptr<Patch> &p : ecosystem) {
+        total_pop += p->get_population();
+    }
+    return total_pop;
 }

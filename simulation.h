@@ -146,6 +146,13 @@ private:
      */
     void simulate_stochastic_events();
 
+    /*
+     * Requires: nothing
+     * Modifies: nothing
+     * Effects: tallies total population
+     */
+    double count_population();
+
 public:
     // CONSTRUCTORS //
     Simulation();
