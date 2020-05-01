@@ -4,6 +4,7 @@
 ---
 
 ##What is Metapopulation Dynamics?
+
 A metapopulation, put simply, is a population of populations. Metapopulation dynamics is an ecological concept which
 deals with populations not as a single large entities, but as networks of spatially explicit discrete local
 population patches which interact dynamically with one another. Metapopulations are a more realistic way of
@@ -17,6 +18,7 @@ any other reason, that patch can be repopulated from other adjacent patches thro
 rescue effect.
 
 ##This Simulation
+
 This simulation is a simple model showcasing key ideas of metapopulation dynamics -- migration between patches, and
 the rescue effect. The user begins by creating the layout of local habitat patches and populating them how they
 please. Once running, the simulation will step through some number of generations, simulating four seasons per
@@ -28,6 +30,7 @@ suffer some population loss. If habitat destruction occurs, a random patch (and 
 from the simulation.
 
 ##Parameters
+
 To adjust parameters for the simulation, you may change the following in main.cpp (descriptions of species params can
  be found in the species.h file):
 - Species R value
@@ -46,6 +49,7 @@ And the following in simulation.cpp:
 - Patch destruction probability
 
 ##Controls
+
 - **Left Mouse Click (and drag):** create habitat patch of desired radius
 - **Up Arrow:** increase population in most recent patch
 - **Down Arrow:** decrease population in most recent patch
@@ -54,6 +58,7 @@ And the following in simulation.cpp:
 - **ESC:** quit simulation
 
 ##Dependencies
+
 This simulation uses the Eigen linear algebra library (v.3.3.7). The header files are included in this repository
 , but downloads for all versions can be found at [the Eigen homepage](http://eigen.tuxfamily.org).
 
