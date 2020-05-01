@@ -43,6 +43,7 @@ void sim_timer(int switcher);
 // Handle mouse button pressed and released events
 void mouse(int button, int state, int x, int y);
 
+// Handles window resizing
 void resize(int width, int height);
 
 #endif /* graphics_h */

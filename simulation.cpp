@@ -163,11 +163,14 @@ void Simulation::update_patch_populations_from_vector() {
 void Simulation::simulate_population_change() {
     int nat_extinctions = 0;
     for (unique_ptr<Patch> &p : ecosystem) {
+        // decide natural extinction for each patch
         if (p -> get_population() > 0 && p -> decide_extinction()) {
             ++nat_extinctions;
             p -> go_extinct();
         }
+        // sim growth for each patch
         double growth = p -> simulate_population_growth();
+        // color patch appropriately based on positive/negative/no growth
         if (growth > 0) {
             p -> setColor(color(0, 1, 0));
         } else if (growth < 0) {
@@ -294,10 +297,10 @@ void Simulation::destroy_patch(int i) {
 }
 
 void Simulation::simulate_stochastic_events() {
+    // sim stochastic event if it happens
     for (unique_ptr<Stochastic_Event> &e : stochastic_events) {
         if (utilities::random_unit_interval() < e->get_probability()) {
             e->execute(this);
-            break;
         }
     }
 }

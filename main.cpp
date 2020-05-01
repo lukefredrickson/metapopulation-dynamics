@@ -2,20 +2,16 @@
 #include "simulation.h"
 #include "patch.h"
 #include "variable_fill_circle.h"
-#include <ctime>
-#include <iostream>
-#include <memory>
-#include <vector>
 #include "Eigen/Dense"
 #include "stochastic_event.h"
-#include "disease.h"
-#include "patch_destruction.h"
 using namespace std;
 
 GLdouble width, height;
 int wd;
 bool left_mouse_pressed = false;
 Simulation sim;
+
+// CHANGE SPECIES VALUES HERE
 const Species SPECIES = Species(0.2, 0.2, 1.5,
         0.25, 30);
 
@@ -49,7 +45,7 @@ void display() {
     
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // DO NOT CHANGE THIS LINE
     
-    /* render circles */
+    // render all patches in simulation
     sim.draw();
 
     
@@ -60,12 +56,12 @@ void display() {
 void kbd(unsigned char key, int x, int y)
 {
     switch(key) {
-        // enter: lock layout
+        // enter: run simulation
         case 13: {
             if(!sim.is_running()) {
                 // run simulation
                 sim.run();
-                // handles timer
+                // begin simulation timer
                 glutTimerFunc(0, sim_timer, 0);
             }
             break;
@@ -76,7 +72,7 @@ void kbd(unsigned char key, int x, int y)
             exit(0);
             break;
         }
-        // del: delete last circle if layout isn't locked, mouse isn't pressed down, and there is a circle to delete
+        // del: delete last circle if the sim isn't running and left mouse isn't pressed down
         case 127: {
             if(!sim.is_running() && !left_mouse_pressed) {
                 sim.delete_last_patch();
@@ -84,18 +80,19 @@ void kbd(unsigned char key, int x, int y)
             break;
         }
     }
-
     glutPostRedisplay();
 }
 
 void kbdS(int key, int x, int y) {
     switch(key) {
+        // up arrow increases population of most recently created patch
         case GLUT_KEY_UP: {
             if (!sim.is_running() && !left_mouse_pressed) {
                 sim.increment_population_last_patch();
             }
             break;
         }
+        // down arrow decreases population of most recently created patch
         case GLUT_KEY_DOWN: {
             if (!sim.is_running() && !left_mouse_pressed) {
                 sim.decrement_population_last_patch();
@@ -103,14 +100,16 @@ void kbdS(int key, int x, int y) {
             break;
         }
     }
-    
     glutPostRedisplay();
 }
 
-void drag(int x, int y) {
 
+
+void drag(int x, int y) {
     if (!sim.is_running()) {
         if (left_mouse_pressed) {
+            // continuously update the radius of the last patch from that patch's center to the current coords
+            // stop when left mouse released
             point2D here = point2D(static_cast<double>(x), static_cast<double>(y));
             point2D center = sim.get_ecosystem().back() -> getCenter();
             sim.update_radius_last_patch(center.distance(here));
@@ -120,32 +119,28 @@ void drag(int x, int y) {
 
 }
 
-
-
-
-// button will be GLUT_LEFT_BUTTON or GLUT_RIGHT_BUTTON
-// state will be GLUT_UP or GLUT_DOWN
 void mouse(int button, int state, int x, int y) {
-
+    // button will be GLUT_LEFT_BUTTON or GLUT_RIGHT_BUTTON
+    // state will be GLUT_UP or GLUT_DOWN
     if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
         // The left button has been pressed down
         left_mouse_pressed = true;
         // if the layout hasn't been locked in already, user is free to make new habitats.
         if (!sim.is_running()) {
+            // add a patch to the ecosystem where the user clicks -- dragging to change radius handled in drag function
             Variable_Fill_Circle c = Variable_Fill_Circle(point2D(static_cast<double>(x), static_cast<double>(y)), 0,
                     0, color(1,1,1,1),color(0,0,0,1),
                     color(1,1,1,1), color(1,0,0,1));
             sim.add_patch(c);
         }
-
     } else if (button == GLUT_LEFT_BUTTON && state == GLUT_UP) {
         // The left button has been released
         left_mouse_pressed = false;
     }
-    
     glutPostRedisplay();
 }
 
+// main simulation clock, switches between simulating season and incrementing season for n generations to run.
 void sim_timer(int switcher) {
     if (sim.is_running()) {
         switch(switcher) {

@@ -14,12 +14,22 @@ class Simulation;
 using namespace std;
 class Stochastic_Event {
 private:
+    // probability of occurrence
     double probability;
 public:
+    // CONSTRUCTORS //
     Stochastic_Event();
     ~Stochastic_Event();
     explicit Stochastic_Event(double probability);
+
+    // GETTERS & SETTERS //
     double get_probability() const;
+
+    /*
+     * Requires: Simulation
+     * Modifies: sim
+     * Effects: determined by child class
+     */
     virtual void execute(Simulation* sim) = 0;
 };
 

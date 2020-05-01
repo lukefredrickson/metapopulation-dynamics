@@ -10,6 +10,17 @@
 #include <random>
 
 namespace utilities {
+    /*
+     * Requires: nothing
+     * Modifies: nothing
+     * Effects: creates random double in range [0, 1]
+     */
     double random_unit_interval();
+
+    /*
+     * Requires: int min and max
+     * Modifies: nothing
+     * Effects: creates random int in range [min, max], inclusive
+     */
     int random_int(int min, int max);
 }

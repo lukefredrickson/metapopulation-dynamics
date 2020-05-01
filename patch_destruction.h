@@ -9,9 +9,16 @@
 
 class Patch_Destruction : public Stochastic_Event {
 public:
+    // CONSTRUCTORS //
     Patch_Destruction();
     ~Patch_Destruction();
     explicit Patch_Destruction(double probability);
+
+    /*
+     * Requires: Simulation
+     * Modifies: sim
+     * Effect: destroys a random patch in the ecosystem
+     */
     void execute(Simulation* sim) override;
 };
 
