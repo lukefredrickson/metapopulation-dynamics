@@ -14,8 +14,14 @@ Simulation::Simulation() {
     winter_harshness = 1;
     running = false;
     current_season = SUMMER;
-    stochastic_events.push_back(make_unique<Disease>(Disease(0.05, 0.5)));
-    stochastic_events.push_back(make_unique<Patch_Destruction>(Patch_Destruction(0.01)));
+
+    // CHANGE STOCHASTIC EVENT PARAMS HERE
+    double disease_prob = 0.05;
+    double disease_extinction_prob = 0.5;
+    double patch_destruction_prob = 0.01;
+
+    stochastic_events.push_back(make_unique<Disease>(Disease(disease_prob, disease_extinction_prob)));
+    stochastic_events.push_back(make_unique<Patch_Destruction>(Patch_Destruction(patch_destruction_prob)));
 }
 
 Simulation::Simulation(int generations_to_run, Species species, double winter_harshness) : Simulation() {
